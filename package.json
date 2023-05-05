@@ -1,0 +1,26 @@
+{
+  "private": true,
+  "author": "meriche <aheroaa@gmail.com>",
+  "scripts": {
+    "dev": "umi dev",
+    "build": "umi build",
+    "postinstall": "umi setup",
+    "setup": "umi setup",
+    "start": "npm run dev"
+  },
+  "dependencies": {
+    "@react-native-community/geolocation": "^3.0.6",
+    "antd-mobile": "^5.29.1",
+    "react-native-maps": "^1.7.1",
+    "umi": "^4.0.67"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.5",
+    "@types/react-dom": "^18.2.3",
+    "prettier": "^2",
+    "prettier-plugin-organize-imports": "^2",
+    "prettier-plugin-packagejson": "^2",
+    "typescript": "^5.0.4",
+    "vconsole": "^3.15.0"
+  }
+}

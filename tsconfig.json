@@ -1,0 +1,8 @@
+{
+   "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true
+  },
+  "extends": "./src/.umi/tsconfig.json"
+}
