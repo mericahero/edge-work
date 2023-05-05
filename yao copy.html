@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>test</title>
+    <style>
+        #redPacket{
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 300px;
+            height: 400px;
+            /* border: 1px solid black; */
+            margin-top: -200px;
+            margin-left: -150px;
+            opacity: 0;
+        }
+        #tip{
+            color: red;
+            font-size: 40px;
+            opacity: 1;
+        }
+    </style>
+</head>
+ 
+<body>
+    <div id="tip">摇一摇得红包</div>
+   <div id="redPacket"></div>
+    <script>
+      var SHAKE_THRESHOLD = 800;
+      var last_update = 0;
+      var x, y, z, last_x=0, last_y=0, last_z=0;
+      function deviceMotionHeadler(eventData){
+          var acceleration = eventData.accelerationIncludingGravity;
+          var curTime = new Date().getTime();
+          if((curTime - last_update) > 300){
+              var diffTime = curTime - last_update;
+              last_update = curTime;
+              x = acceleration.x;
+              y = acceleration.y;
+              z = acceleration.z;
+              var speed = Math.abs(x + y + z -last_x -last_y -last_z)/ diffTime * 10000;
+              if(speed > SHAKE_THRESHOLD){
+                  alert('恭喜你获得红包!');
+                  var div = document.getElementById('redPacket');
+                  var img = new Image();
+                  img.src = 'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3378701361,2399708000&fm=27&gp=0.jpg';
+                  img.onload = function(){
+                      div.appendChild(img);
+                      img.style.width = '300px';
+                      img.style.height = '400px';
+                      tip.style.opacity = 0;
+                      div.style.opacity = 1;
+                  }
+              }
+              last_x = x;
+              last_y = y;
+              last_z = z;
+          }
+      }  
+      window.addEventListener('devicemotion', deviceMotionHeadler, false);
+    </script>
+</body>
+ 
+</html>
