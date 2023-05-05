@@ -10,8 +10,8 @@ export default defineConfig({
     {path: "/move", component: "@/pages/move/index"},
   ],
   npmClient: 'pnpm',
-  https:{
-    cert:'./https/server.crt',
-    key:'./https/server.key'
-  }
+  // https:{
+  //   cert:'./https/server.crt',
+  //   key:'./https/server.key'
+  // }
 });

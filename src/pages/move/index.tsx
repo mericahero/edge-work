@@ -1,8 +1,11 @@
 import { useEffect, useRef, Component } from 'react';
+import debounce from 'lodash/debounce';
 
 
 export default function HomePage() {
   const canvasRef = useRef(null);
+
+
 
   useEffect(() => {
 
@@ -21,9 +24,7 @@ export default function HomePage() {
     const ctx = canvas.getContext('2d');
     let posX = canvas.width / 2;
     let posY = canvas.height / 2;
-    console.log("ccc")
-    ctx.lineTo(100,100)
-    ctx.stroke();
+
     const handleMotion = e => {
       console.log("abc")
       posX += e.accelerationIncludingGravity.x;
@@ -32,12 +33,14 @@ export default function HomePage() {
       ctx.lineTo(posX, posY);
       ctx.stroke();
     };
+
+    const wraped = debounce(handleMotion, 1000);
     console.log("bbb")
-    window.addEventListener('devicemotion', handleMotion);
-    window.addEventListener('DeviceOrientation', handleMotion);
+    window.addEventListener('devicemotion', debounce(wraped));
+    // window.addEventListener('DeviceOrientation', wraped);
 
     return () => {
-      // window.removeEventListener('devicemotion', handleMotion);
+      window.removeEventListener('devicemotion', wraped);
     };
   }, []);
 
