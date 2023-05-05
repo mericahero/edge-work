@@ -34,7 +34,7 @@ export default function HomePage() {
       ctx.stroke();
     };
 
-    const wraped = debounce(handleMotion, 1000);
+    const wraped = debounce(handleMotion, 15);
     console.log("bbb")
     window.addEventListener('devicemotion', debounce(wraped));
     // window.addEventListener('DeviceOrientation', wraped);
