@@ -8,10 +8,11 @@ export default defineConfig({
     { path: "/", component: "index" },
     { path: "/docs", component: "docs" },
     {path: "/move", component: "@/pages/move/index"},
+    {path: "/game", component: "@/pages/game/index"},
   ],
   npmClient: 'pnpm',
-  // https:{
-  //   cert:'./https/server.crt',
-  //   key:'./https/server.key'
-  // }
+  https:{
+    cert:'./https/server.crt',
+    key:'./https/server.key'
+  }
 });
