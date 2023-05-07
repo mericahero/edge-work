@@ -13,6 +13,9 @@ dependencies:
   react-native-maps:
     specifier: ^1.7.1
     version: 1.7.1(react-native@0.71.7)(react@18.2.0)
+  three:
+    specifier: ^0.152.2
+    version: 0.152.2
   umi:
     specifier: ^4.0.67
     version: 4.0.67(@babel/core@7.21.8)(@types/react@18.2.5)(eslint@8.39.0)(postcss@8.4.23)(prettier@2.8.8)(react-dom@18.2.0)(react@18.2.0)(styled-components@5.3.10)(stylelint@14.16.1)(typescript@5.0.4)(webpack@5.82.0)
@@ -10868,6 +10871,10 @@ packages:
     resolution: {integrity: sha512-UkEhKIg2pD+fjkHQKyJO3yoIvAP3N6RlNFt2dUhcS1FGvCD1cQa1M/PGknCLFIyZdtJOWQjejp7bdNqmN7zwdA==}
     dependencies:
       real-require: 0.1.0
+    dev: false
+
+  /three@0.152.2:
+    resolution: {integrity: sha512-Ff9zIpSfkkqcBcpdiFo2f35vA9ZucO+N8TNacJOqaEE6DrB0eufItVMib8bK8Pcju/ZNT6a7blE1GhTpkdsILw==}
     dev: false
 
   /throat@5.0.0:
