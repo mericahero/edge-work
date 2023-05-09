@@ -9,6 +9,7 @@ export default defineConfig({
     { path: "/docs", component: "docs" },
     {path: "/move", component: "@/pages/move/index"},
     {path: "/game", component: "@/pages/game/index"},
+    {path: "/draw", component: "@/pages/draw/index"},
   ],
   npmClient: 'pnpm',
   https:{
