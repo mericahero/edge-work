@@ -11,6 +11,7 @@
   "dependencies": {
     "@react-native-community/geolocation": "^3.0.6",
     "antd-mobile": "^5.29.1",
+    "d3": "^7.8.4",
     "lodash": "^4.17.21",
     "react-native-maps": "^1.7.1",
     "three": "^0.152.2",

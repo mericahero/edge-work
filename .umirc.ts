@@ -10,6 +10,10 @@ export default defineConfig({
     {path: "/move", component: "@/pages/move/index"},
     {path: "/game", component: "@/pages/game/index"},
     {path: "/draw", component: "@/pages/draw/index"},
+    {path: "/geo", component: "@/pages/geo/index"},
+    {path:"/circle",component:"@/pages/circle/index"},
+    {path:"/movegv",component:"@/pages/movegv/index"},
+    {path:"bluetooth",component:"@/pages/bluetooth/index"},
   ],
   npmClient: 'pnpm',
   https:{

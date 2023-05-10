@@ -9,15 +9,15 @@ var isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); // 判
 export default function HomePage() {
   const canvasRef = useRef(null);
 
-  var handleMotion,handleOrientation
+  var handleMotion, handleOrientation
   const beginMove = () => {
     window.DeviceMotionEvent.requestPermission().then(response => {
-        if (response === 'granted') {
-          beginCaptureMove()
-        } else {
-          console.log(response);
-        }
-      })
+      if (response === 'granted') {
+        beginCaptureMove()
+      } else {
+        console.log(response);
+      }
+    })
   }
 
   const endMove = () => {
@@ -25,11 +25,11 @@ export default function HomePage() {
   }
 
 
-let [vX, vY, vZ] = [0, 0, 0];
+  let [vX, vY, vZ] = [0, 0, 0];
 
-setInterval(() => {
-  console.log(vX, vY, vZ)
-}, 1000)
+  setInterval(() => {
+    console.log(vX, vY, vZ)
+  }, 1000)
   const beginCaptureMove = () => {
     const canvas = canvasRef.current as unknown as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
@@ -40,7 +40,7 @@ setInterval(() => {
 
     let [posX, posY] = [canvas.width / 2, canvas.height / 2];
     let [lastPosX, lastPosY] = [posX, posY];
-    
+
 
     let rotation = new THREE.Matrix4();
     let deviceRotation = new THREE.Matrix4();
@@ -59,7 +59,7 @@ setInterval(() => {
       //   return
       // }
       // ctx.beginPath();
-      console.log(posX,posY)
+      console.log(posX, posY)
       ctx.lineTo(posX, posY);
       ctx.stroke();
 
@@ -69,7 +69,7 @@ setInterval(() => {
     requestAnimationFrame(animate);
 
     const handleMotion = (e: DeviceMotionEvent) => {
-        if (e.rotationRate?.alpha && e.rotationRate?.beta && e.rotationRate?.gamma) {
+      if (e.rotationRate?.alpha && e.rotationRate?.beta && e.rotationRate?.gamma) {
         let alpha = THREE.MathUtils.degToRad(e.rotationRate.alpha);
         let beta = THREE.MathUtils.degToRad(e.rotationRate.beta);
         let gamma = THREE.MathUtils.degToRad(e.rotationRate.gamma);
@@ -77,7 +77,7 @@ setInterval(() => {
         rotation.makeRotationFromEuler(new THREE.Euler(beta, alpha, -gamma));
       }
 
-      let s_interval = e.interval/(isiOS?1:1000);
+      let s_interval = e.interval / (isiOS ? 1 : 1000);
       const s2 = s_interval * s_interval;
 
       // 计算 x、y、z 轴上的加速度
@@ -98,8 +98,8 @@ setInterval(() => {
       vY += y * s_interval;
       vZ += z * s_interval;
 
-      if(deltaDistance.x === 0 && deltaDistance.y === 0 && deltaDistance.z === 0) return
-      
+      if (deltaDistance.x === 0 && deltaDistance.y === 0 && deltaDistance.z === 0) return
+
 
       // 将真实的移动距离转换为画布上的距离
       const canvasMoveDistance = {
@@ -108,7 +108,7 @@ setInterval(() => {
         z: deltaDistance.z <= thresholdDistance ? 0 : canvas.height * deltaDistance.z / realWorldMoveRange.z,
       }
 
-      console.log(JSON.stringify({x,y,z,vX,vY,vZ,deltaDistance,canvasMoveDistance},null,2))
+      console.log(JSON.stringify({ x, y, z, vX, vY, vZ, deltaDistance, canvasMoveDistance }, null, 2))
       posX += canvasMoveDistance.x;
       posY += canvasMoveDistance.z;
     };
