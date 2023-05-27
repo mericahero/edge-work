@@ -1,94 +1,278 @@
-import { useEffect, useRef, Component, MouseEvent } from 'react';
-import { Button, Space } from 'antd-mobile'
+import React, { useEffect, useRef, useState, Component, MouseEvent, PureComponent, RefObject } from 'react';
+import { Button, Space, AutoCenter, List, SafeArea, Image, Toast } from 'antd-mobile'
+import { WebSocketConnection } from '@/utils/wsocket';
+import axios from 'axios'
+import styles from './index.less'
+import { render } from 'react-dom';
 
-var isiOS = !!navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); // 判断是否为 iOS
-
+type Props = {};
 // DeviceMotionEvent 事件解释 https://developer.aliyun.com/article/898270
-export default function HomePage() {
-  const canvasRef = useRef(null);
-let canvas: HTMLCanvasElement
-let ctx:CanvasRenderingContext2D
+export default class Draw extends Component<Props> {
+  private wss_server: string;
+  private socket: WebSocketConnection;
+  private canvasRef: RefObject<HTMLCanvasElement>;
+  // private predictHistoryRef = useRef([])
+  private needToastr: boolean;
+  // 预设
+  private isDrawing = false;
 
-  useEffect(() => {
-    canvas = canvasRef.current as unknown as HTMLCanvasElement;
-    ctx = canvas.getContext('2d');
-    // 预设
-let isDrawing = false;
-let mouseDown = (event) => {
-    isDrawing = true;
-  ctx.beginPath();
-  ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
-}
+  constructor(props: Props) {
+    super(props);
+    this.canvasRef = React.createRef<HTMLCanvasElement>();
+    this.wss_server = "wss://service-2znrr803-1318170969.sh.apigw.tencentcs.com/release/"
+    this.socket = new WebSocketConnection(this.wss_server, 3, this.onConnecting, this.onConnected)
+    this.state = {
+      predictHistory: [],
+      useless: 0
+    }
+    this.needToastr = false;
 
-let touchStart = event =>{
-  event.preventDefault();
-  isDrawing = true;
-  ctx.beginPath();
-  ctx.moveTo(event.touches[0].clientX - canvas.offsetLeft, event.touches[0].clientY - canvas.offsetTop);
-};
-
-let mouseMove = event =>{
-  event.preventDefault();
-  if (isDrawing) {
-    ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
-    ctx.stroke();
   }
-}
 
-let touchMove = event =>{
+
+  componentDidMount() {
+    console.log('run2')
+
+    const canvas = this.cvs()
+    canvas.addEventListener("mousedown", this.mouseDown.bind(this));
+    canvas.addEventListener("mousemove", this.mouseMove.bind(this));
+    canvas.addEventListener("mouseup", this.mouseUp.bind(this));
+
+    canvas.addEventListener("touchstart", this.touchStart.bind(this));
+    canvas.addEventListener("touchmove", this.touchMove.bind(this));
+    canvas.addEventListener("touchend", this.mouseUp.bind(this));
+  }
+
+
+  componentWillUnmount() {
+    const canvas = this.cvs()
+    canvas.removeEventListener("mousedown", this.mouseDown);
+    canvas.removeEventListener("mousemove", this.mouseMove);
+    canvas.removeEventListener("mouseup", this.mouseUp);
+
+    canvas.removeEventListener("touchstart", this.touchStart);
+    canvas.removeEventListener("touchmove", this.touchMove);
+    canvas.removeEventListener("touchend", this.mouseUp);
+    this.socket.close()
+  }
+
+
+  private cvs() {
+    return this.canvasRef.current as unknown as HTMLCanvasElement;
+  }
+
+  private cvtx() {
+    return this.cvs().getContext('2d');
+  }
+
+
+
+
+
+
+
+  private mouseDown(event) {
+    const canvas = this.cvs()
+    const ctx = this.cvtx()
+    this.isDrawing = true;
+    ctx.beginPath();
+    ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+  }
+
+  private touchStart(event) {
     event.preventDefault();
-  if (isDrawing) {
-    ctx.lineTo(event.touches[0].clientX - canvas.offsetLeft, event.touches[0].clientY - canvas.offsetTop);
-    ctx.stroke();
+    const canvas = this.cvs()
+    const ctx = this.cvtx()
+    this.isDrawing = true;
+    ctx.beginPath();
+    ctx.moveTo(event.touches[0].clientX - canvas.offsetLeft, event.touches[0].clientY - canvas.offsetTop);
+  };
+
+
+  private mouseMove(event) {
+    event.preventDefault();
+    if (this.isDrawing) {
+      const canvas = this.cvs()
+      const ctx = this.cvtx()
+      ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+      ctx.strokeStyle = "#fff";
+      ctx.stroke();
+    }
   }
-};
 
-let mouseUp = event =>{
-  isDrawing = false;
-}
-canvas.addEventListener("mousedown", mouseDown);
-canvas.addEventListener("mousemove", mouseMove);
-canvas.addEventListener("mouseup",mouseUp);
+  private touchMove(event) {
+    event.preventDefault();
+    const canvas = this.cvs()
+    const ctx = this.cvtx()
+    if (this.isDrawing) {
 
-canvas.addEventListener("touchstart", touchStart);
-canvas.addEventListener("touchmove", touchMove);
-canvas.addEventListener("touchend",mouseUp);
-return () => {
-  canvas.removeEventListener("mousedown", mouseDown);
-  canvas.removeEventListener("mousemove", mouseMove);
-  canvas.removeEventListener("mouseup", mouseUp);
+      ctx.lineTo(event.touches[0].clientX - canvas.offsetLeft, event.touches[0].clientY - canvas.offsetTop);
+      ctx.stroke();
+    }
+  };
 
-  canvas.removeEventListener("touchstart", touchStart);
-  canvas.removeEventListener("touchmove", touchMove);
-  canvas.removeEventListener("touchend", mouseUp);
+  private mouseUp(event) {
+
+    this.isDrawing = false;
+    this.predict()
+  }
 
 
-}
-}, [])
+
+  private onConnecting() {
+    if (!this.needToastr) return
+    Toast.show({
+      icon: 'fail',
+      content: '已断线，连接中...',
+    })
+    this.needToastr = false
+  }
+
+  private onConnected() {
+    if (!this.needToastr) return
+    Toast.show({
+      icon: 'success',
+      content: '已连接',
+    })
+    this.needToastr = false
+  }
+
+  private predict() {
+    const canvas = this.cvs();
+    let dataUrl = canvas.toDataURL("image/png");
+    let rawBase64 = dataUrl.replace(/data:image\/png;base64,/, '');
+
+    axios({
+      method: 'post',
+      // url: 'http://139.196.157.136:5800/api/predict',
+      url: 'https://47.102.133.7/api/predict',
+      data: {
+        "data": rawBase64
+      },
+      transformRequest: [
+        function (data) {
+          let ret = ''
+          for (let it in data) {
+            ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+          }
+          ret = ret.substring(0, ret.lastIndexOf('&'));
+          return ret
+        }
+      ],
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then((response) => {
+      console.log(JSON.stringify(response.data));
+      let cur = {
+        "img": dataUrl,
+        "result": this.arrangePredicts(response.data.prediction)
+      }
+      this.setState({
+        predictHistory: [cur, ...this.state.predictHistory]
+      })
+      this.clearCanvas()
+    }).catch((error) => {
+      console.log(error);
+    });
+  }
 
 
-function saveImage() {
+  private arrangePredicts(prediction: {
+    names: string[],
+    numbers: number[]
+  } = { names: [], numbers: [] }) {
+    if (!prediction || !prediction.names || !prediction.numbers || prediction.names.length != prediction.numbers.length) {
+      return []
+    }
 
-  // var dataUrl = ctx.toDataURL("image/png");
-  // var img = new Image();
-  // img.src = dataUrl;
-  // document.body.appendChild(img);
-}
+    let names = prediction.names;
+    let numbers = prediction.numbers;
+    let result = []
+    for (let i = 0; i < names.length; i++) {
+      result.push({
+        name: names[i],
+        number: numbers[i]
+      })
+    }
+    // sort result by number
+    result.sort((a, b) => {
+      return b.number - a.number
+    })
+    return result
+
+  }
+
+  private sendJumpAction(actionType: string = 'short') {
+    this.needToastr = true
+    this.socket.sendJumpAction(actionType)
+  }
+
+  private clearCanvas() {
+    // clear canvas content
+    const canvas = this.cvs()
+    const ctx = this.cvtx()
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  render() {
+    return (
+      <AutoCenter className={styles.container}>
+        <div>
+          <canvas
+            ref={this.canvasRef}
+            width={300}
+            height={300}
+            style={{ backgroundColor: '#000' }}
+          />
+        </div>
 
 
-  return (
-    <>
-      <Button
-        color="primary"
-        size='small'
-        onClick={saveImage}
-      >保存路径</Button>
-      <canvas
-        ref={canvasRef}
-        width={300}
-        height={300}
-        style={{ backgroundColor: '#bbb' }}
-      />
-    </>
-  );
+        <div>
+          <Space>
+            <Button color="primary" size='small' onClick={() => this.predict()}>预测</Button>
+            <Button color="primary" size='small' onClick={() => this.clearCanvas()}>清空</Button>
+            <Button color="primary" size='small' onClick={() => this.sendJumpAction('short')}>小跳</Button>
+            <Button color="primary" size='small' onClick={() => this.sendJumpAction('long')}>大跳</Button>
+          </Space>
+        </div>
+
+        <div className={styles.prehis}>
+          <List header='预测历史'>
+            {this.state.predictHistory.map((item, index) => {
+              return (
+                <List.Item
+                  key={index}
+                  prefix={
+                    <Image
+                      src={item.img}
+                      style={{ borderRadius: 20, background: '#333' }}
+                      fit='cover'
+                      width={40}
+                      height={40}
+                    />
+                  }
+                  title={
+                    <ul>
+                      {item.result.map((predict, index) => {
+                        return (
+                          <li key={index}>
+                            <span>{predict.name}</span>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  }
+                // description={'abc'} 
+                // extra='none' 
+                />
+              )
+            })}
+          </List>
+        </div>
+        <SafeArea position='bottom' />
+      </AutoCenter>
+
+    );
+  }
 }

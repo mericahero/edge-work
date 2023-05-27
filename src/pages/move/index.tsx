@@ -83,8 +83,8 @@ export default function HomePage() {
       // 计算 x、y、z 轴上的加速度
       let { x, y, z } = e.accelerationIncludingGravity;
       // 将加速度向量转换为世界坐标系中的向量
-      // const vector = convertToWorldCoord(x, y, z);
-      // [x, y, z] = [vector.x, vector.y, vector.z];
+      const vector = convertToWorldCoord(x, y, z);
+      [x, y, z] = [vector.x, vector.y, vector.z];
 
       // 计算真实的移动距离
       const deltaDistance = {
@@ -92,6 +92,7 @@ export default function HomePage() {
         y: y <= thresholdAccelarate ? 0 : (vY * s_interval + 0.5 * y * s2),
         z: z <= thresholdAccelarate ? 0 : (vZ * s_interval + 0.5 * z * s2),
       }
+
 
       // 更新速度
       vX += x * s_interval;
@@ -107,6 +108,8 @@ export default function HomePage() {
         y: deltaDistance.y <= thresholdDistance ? 0 : canvas.height * deltaDistance.y / realWorldMoveRange.y,
         z: deltaDistance.z <= thresholdDistance ? 0 : canvas.height * deltaDistance.z / realWorldMoveRange.z,
       }
+
+    
 
       console.log(JSON.stringify({ x, y, z, vX, vY, vZ, deltaDistance, canvasMoveDistance }, null, 2))
       posX += canvasMoveDistance.x;
