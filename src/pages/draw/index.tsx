@@ -8,7 +8,6 @@ import { render } from 'react-dom';
 type Props = {};
 // DeviceMotionEvent 事件解释 https://developer.aliyun.com/article/898270
 export default class Draw extends Component<Props> {
-  private wss_server: string;
   private socket: WebSocketConnection;
   private canvasRef: RefObject<HTMLCanvasElement>;
   // private predictHistoryRef = useRef([])
@@ -19,8 +18,8 @@ export default class Draw extends Component<Props> {
   constructor(props: Props) {
     super(props);
     this.canvasRef = React.createRef<HTMLCanvasElement>();
-    this.wss_server = "wss://service-2znrr803-1318170969.sh.apigw.tencentcs.com/release/"
-    this.socket = new WebSocketConnection(this.wss_server, 3, this.onConnecting, this.onConnected)
+    let wss_server = "wss://service-2znrr803-1318170969.sh.apigw.tencentcs.com/release/"
+    this.socket = new WebSocketConnection(wss_server, 3, this.onConnecting, this.onConnected)
     this.state = {
       predictHistory: [],
       useless: 0
@@ -172,6 +171,26 @@ export default class Draw extends Component<Props> {
         predictHistory: [cur, ...this.state.predictHistory]
       })
       this.clearCanvas()
+
+      let longNames = [
+        'pillow','octagon','necklace','hexagon','bracelet',
+        'stitches','grass','beach','ant','animal','migration',
+'sandwich','pillow','hedgehog','foot','bracelet',
+'telephone','screwdriver','map','hexagon','drill',]
+      // judge if cur.result array each item is in longNames
+      let isLong = false
+      for (let i = 0; i < cur.result.length; i++) {
+        if (longNames.includes(cur.result[i].name)) {
+          isLong = true
+          break
+        }
+      }
+      if (isLong) {
+        this.sendJumpAction('long')
+      }else{
+        this.sendJumpAction('short')
+      }
+
     }).catch((error) => {
       console.log(error);
     });
