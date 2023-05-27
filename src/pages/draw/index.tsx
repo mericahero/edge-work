@@ -106,6 +106,7 @@ export default class Draw extends Component<Props> {
     if (this.isDrawing) {
 
       ctx.lineTo(event.touches[0].clientX - canvas.offsetLeft, event.touches[0].clientY - canvas.offsetTop);
+      ctx.strokeStyle = "#fff";
       ctx.stroke();
     }
   };
@@ -167,29 +168,38 @@ export default class Draw extends Component<Props> {
         "img": dataUrl,
         "result": this.arrangePredicts(response.data.prediction)
       }
-      this.setState({
-        predictHistory: [cur, ...this.state.predictHistory]
-      })
-      this.clearCanvas()
+
 
       let longNames = [
-        'pillow','octagon','necklace','hexagon','bracelet',
-        'stitches','grass','beach','ant','animal','migration',
-'sandwich','pillow','hedgehog','foot','bracelet',
-'telephone','screwdriver','map','hexagon','drill',]
+        'pillow', 'octagon', 'necklace', 'hexagon', 'bracelet',
+        'stitches', 'grass', 'beach', 'ant', 'animal', 'migration',
+        'sandwich', 'pillow', 'hedgehog', 'foot', 'bracelet',
+        'telephone', 'screwdriver', 'map', 'hexagon', 'drill',]
       // judge if cur.result array each item is in longNames
+      let shotNames = [
+        'line','ocean','beach'
+      ]
       let isLong = false
       for (let i = 0; i < cur.result.length; i++) {
         if (longNames.includes(cur.result[i].name)) {
           isLong = true
           break
         }
+        if(shotNames.includes(cur.result[i].name)){
+          isLong = false
+          break
+        }
       }
       if (isLong) {
         this.sendJumpAction('long')
-      }else{
+      } else {
         this.sendJumpAction('short')
       }
+      cur.action = isLong ? 'long' : 'short'
+      this.setState({
+        predictHistory: [cur, ...this.state.predictHistory]
+      })
+      this.clearCanvas()
 
     }).catch((error) => {
       console.log(error);
@@ -282,7 +292,7 @@ export default class Draw extends Component<Props> {
                       })}
                     </ul>
                   }
-                // description={'abc'} 
+                description={item.action} 
                 // extra='none' 
                 />
               )
