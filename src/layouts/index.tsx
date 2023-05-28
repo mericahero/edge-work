@@ -28,37 +28,37 @@ const Bottom: FC = () => {
   }
 
   const tabs = [
-    {
-      key: '/',
-      title: '首页',
-      icon: <AppOutline />,
-    },
+    // {
+    //   key: '/',
+    //   title: '首页',
+    //   icon: <AppOutline />,
+    // },
     {
       key: '/draw',
       title: 'Draw',
       icon: <MessageOutline />,
     },
-    {
-      key: '/move',
-      title: 'Move',
-      icon: <UnorderedListOutline />,
-    },
+    // {
+    //   key: '/move',
+    //   title: 'Move',
+    //   icon: <UnorderedListOutline />,
+    // },
 
-    {
-      key: '/game',
-      title: 'Game',
-      icon: <UserOutline />,
-    },
+    // {
+    //   key: '/game',
+    //   title: 'Game',
+    //   icon: <UserOutline />,
+    // },
     {
       key: '/circle',
       title: 'circle',
       icon: <SmileOutline />,
     },
-    {
-      key: '/movegv',
-      title: 'movegv',
-      icon: <ChatCheckOutline />,
-    },
+    // {
+    //   key: '/movegv',
+    //   title: 'movegv',
+    //   icon: <ChatCheckOutline />,
+    // },
   ]
 
   return (

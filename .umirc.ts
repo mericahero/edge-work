@@ -5,7 +5,8 @@ import { defineConfig } from "umi";
 
 export default defineConfig({
   routes: [
-    { path: "/", component: "index" },
+    // { path: "/", component: "index" },
+    { path: "/", component:"@/pages/draw/index"},
     { path: "/docs", component: "docs" },
     {path: "/move", component: "@/pages/move/index"},
     {path: "/game", component: "@/pages/game/index"},
