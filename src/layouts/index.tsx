@@ -1,6 +1,6 @@
 import { Link, Outlet,useNavigate } from 'umi';
 import styles from './index.less';
-import vconsole from './vconsole';
+import VConsole from "vconsole"
 
 import React, { FC } from 'react'
 import { NavBar, TabBar } from 'antd-mobile'
@@ -73,8 +73,12 @@ const Bottom: FC = () => {
 
 
 export default () => {
-  vconsole.show()
-  vconsole.hide()
+  // if location url query contains ?debug=true, show vconsole
+  if (window.location.href.indexOf('debug=true') > -1) {
+    let vc = new VConsole()
+    vc.hide()
+  }
+  
   return (
       <div className={styles.app}>
         <div className={styles.body}>
