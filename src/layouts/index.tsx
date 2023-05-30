@@ -87,7 +87,7 @@ export default () => {
         <div className={styles.body}>
           <Outlet />
         </div>
-          <div className={styles.bottom}>
+        <div className={styles.bottom}>
           <Bottom />
         </div>
       </div>
