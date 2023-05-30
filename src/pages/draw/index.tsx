@@ -247,6 +247,9 @@ export default class Draw extends Component<Props> {
   render() {
     return (
       <AutoCenter className={styles.container}>
+        <div className={styles.section_desc}>
+          控制面板
+        </div>
         <div>
           <canvas
             ref={this.canvasRef}
@@ -256,18 +259,20 @@ export default class Draw extends Component<Props> {
           />
         </div>
 
-
-        <div>
+        {/* <div>
           <Space>
-            <Button color="primary" size='small' onClick={() => this.predict()}>预测</Button>
-            <Button color="primary" size='small' onClick={() => this.clearCanvas()}>清空</Button>
-            <Button color="primary" size='small' onClick={() => this.sendJumpAction('short')}>小跳</Button>
-            <Button color="primary" size='small' onClick={() => this.sendJumpAction('long')}>大跳</Button>
+            <Button color="primary" fill="outline" size='small' onClick={() => this.predict()}>预测</Button>
+            <Button color="primary" fill="outline" size='small' onClick={() => this.clearCanvas()}>清空</Button>
+            <Button color="primary" fill="outline" size='small' onClick={() => this.sendJumpAction('short')}>小跳</Button>
+            <Button color="primary" fill="outline" size='small' onClick={() => this.sendJumpAction('long')}>大跳</Button>
           </Space>
-        </div>
+        </div> */}
 
+        <div className={styles.section_desc}>
+          预测历史
+        </div>
         <div className={styles.prehis}>
-          <List header='预测历史'>
+          <List mode='card'>
             {this.state.predictHistory.map((item, index) => {
               return (
                 <List.Item
@@ -292,8 +297,7 @@ export default class Draw extends Component<Props> {
                       })}
                     </ul>
                   }
-                description={item.action} 
-                // extra='none' 
+                extra={item.action} 
                 />
               )
             })}

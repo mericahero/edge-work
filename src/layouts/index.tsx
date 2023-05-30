@@ -64,7 +64,10 @@ const Bottom: FC = () => {
   return (
     <TabBar activeKey={pathname} onChange={value => setRouteActive(value)}>
       {tabs.map(item => (
-        <TabBar.Item key={item.key} icon={item.icon} title={item.title} />
+        <TabBar.Item 
+          key={item.key} 
+          icon={item.icon} 
+          title={item.title} />
       ))}
     </TabBar>
   )

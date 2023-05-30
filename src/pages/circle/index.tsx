@@ -135,6 +135,16 @@ class CircleView extends Component {
 
     return (
       <AutoCenter className={styles.container}>
+
+        <div>
+          <Button
+            color="primary"
+            size='small'
+            fill="outline"
+            onClick={this.beginMove}
+          >开始</Button>
+        </div>
+
         <div>
           <svg width={this.svg_width} height={this.svg_height} style={{ background: '#000' }}>
             <circle cx={positions[posLen - 1]?.[0]} cy={positions[posLen - 1]?.[1]} r="8" fill="white" />
@@ -145,16 +155,13 @@ class CircleView extends Component {
           /> */}
           </svg>
         </div>
-        <div>
-          <Button
-            color="primary"
-            size='small'
-            onClick={this.beginMove}
-          >开始</Button>
-        </div>
 
+
+        <div className={styles.section_desc}>
+          预测历史
+        </div>
         <div className={styles.prehis}>
-          <List header='预测历史'>
+          <List mode="card">
             {this.state.circleHistory.map((item, index) => {
               return (
                 <List.Item
