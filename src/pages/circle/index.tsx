@@ -95,9 +95,14 @@ class CircleView extends Component {
         }
         this.jumpTimer = setTimeout(() => {
           this.jumpTimer = null
-          this.socket.sendJumpAction(clockwise? 'short': 'long')
+          let jumpAction = clockwise? 'short': 'long'
+          this.socket.sendJumpAction(jumpAction)
+          let cur ={
+            jumpAction: jumpAction,
+            direction: direction
+          }
           this.setState(prevState => ({
-            circleHistory: [direction, ...prevState.circleHistory],
+            circleHistory: [cur, ...prevState.circleHistory],
           }));
         }, 500)
       }
@@ -106,7 +111,6 @@ class CircleView extends Component {
         positions: [...prevState.positions, [x0, y0]],
         direction
       }));
-      console.log(direction);
     }
   }
 
@@ -135,7 +139,6 @@ class CircleView extends Component {
 
     return (
       <AutoCenter className={styles.container}>
-
         <div>
           <Button
             color="primary"
@@ -144,7 +147,6 @@ class CircleView extends Component {
             onClick={this.beginMove}
           >开始</Button>
         </div>
-
         <div>
           <svg width={this.svg_width} height={this.svg_height} style={{ background: '#000' }}>
             <circle cx={positions[posLen - 1]?.[0]} cy={positions[posLen - 1]?.[1]} r="8" fill="white" />
@@ -155,8 +157,6 @@ class CircleView extends Component {
           /> */}
           </svg>
         </div>
-
-
         <div className={styles.section_desc}>
           预测历史
         </div>
@@ -166,10 +166,10 @@ class CircleView extends Component {
               return (
                 <List.Item
                   key={index}
-                  title={item}
-
+                  title={item.direction}
+                  extra={item.jumpAction}
                 // description={'abc'} 
-                // extra='none' 
+                // extra='none'
                 />
               )
             })}
